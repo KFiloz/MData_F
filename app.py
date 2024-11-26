@@ -44,7 +44,7 @@ def get_latest_data(limit=4):
         # Tomar solo los últimos "limit" elementos
         return data[:limit]
     except Exception as e:
-        st.error(f"Error al obtener datos de DynamoDB: {e}")
+        st.error(f"Error al obtener datos de AWS: {e}")
         return []
 
 # Función para crear un mapa interactivo
@@ -73,7 +73,7 @@ def create_map(data):
     return m
 
 # Interfaz de Streamlit
-st.title("Mapa de Dispositivos IoT - DynamoDB")
+st.title("Mapa de Dispositivos IoT - Card Tracker")
 st.write("Esta aplicación muestra los últimos datos de los dispositivos conectados.")
 
 # Obtener y mostrar los últimos datos
