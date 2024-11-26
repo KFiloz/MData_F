@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Leer las credenciales de las variables de entorno
-aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+aws_access_key_id = os.getenv('ACCESS_KEY_ID')
+aws_secret_access_key = os.getenv('SECRET_ACCESS_KEY')
 
 # Configurar la conexión a DynamoDB
 dynamodb = boto3.resource(

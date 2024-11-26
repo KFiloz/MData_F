@@ -1,0 +1,17 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - pip install -r requirements.txt  # Instalar las dependencias
+    build:
+      commands:
+        - streamlit run AppLorawan.py --server.port 80  # Ejecutar la aplicación
+  artifacts:
+    baseDirectory: /
+    files:
+      - '**/*'  # Incluir todos los archivos
+  cache:
+    paths:
+      - node_modules/**/*  # Caché de dependencias (si usas librerías frontend)
+      - .python-version  # Opcional para entornos Python
