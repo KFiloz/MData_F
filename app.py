@@ -33,30 +33,23 @@ TARGET_DEVICES = list(DEVICE_MAP.keys())
 # Función para obtener los últimos datos de los dispositivos específicos
 def get_latest_data_by_device(devices):
     try:
-        # Escanear la tabla para obtener todos los datos
+        # Consultar todos los datos de la tabla DynamoDB
         response = table.scan()
         data = response['Items']
 
-        # Convertir timestamps a enteros para ordenarlos correctamente
+        # Filtrar los datos por dispositivo y obtener el último dato basado en timestamp_unix_ms
+        filtered_data = {}
         for item in data:
-            if 'timestamp' in item:
-                try:
-                    item['timestamp'] = int(item['timestamp'])
-                except ValueError:
-                    item['timestamp'] = 0
-
-        # Filtrar los datos por dispositivos específicos
-        filtered_data = {device: None for device in devices}
-
-        for item in data:
-            device_eui = item.get('eui')
+            device_eui = item.get("device_id")
+            timestamp = item.get("timestamp_unix_ms")
+            
+            # Validar si el dato corresponde al dispositivo que estamos monitoreando
             if device_eui in devices:
-                if (filtered_data[device_eui] is None or
-                        item.get('timestamp', 0) > filtered_data[device_eui].get('timestamp', 0)):
+                if device_eui not in filtered_data or (timestamp and timestamp > filtered_data[device_eui].get("timestamp_unix_ms", 0)):
                     filtered_data[device_eui] = item
 
         # Retornar los datos más recientes de cada dispositivo
-        return [data for data in filtered_data.values() if data is not None]
+        return list(filtered_data.values())
     except Exception as e:
         st.error(f"Error al obtener datos de AWS: {e}")
         return []
@@ -67,11 +60,11 @@ def create_map(data):
     m = folium.Map(location=[10.987103, -74.790072], zoom_start=10)
 
     for item in data:
-        lat = float(item.get('Latitud', 0))
-        lon = float(item.get('Longitud', 0))
-        temp = item.get('Temperatura', 'N/A')
-        batt = item.get('Bateria', 'N/A')
-        eui = item.get('eui', 'Desconocido')
+        lat = float(item.get('latitud', 0))
+        lon = float(item.get('longitud', 0))
+        temp = item.get('temperatura', 'N/A')
+        batt = item.get('bateria', 'N/A')
+        eui = item.get('device_id', 'Desconocido')
 
         # Obtener el nombre del dispositivo a partir del mapeo
         device_name = DEVICE_MAP.get(eui, "Desconocido")
